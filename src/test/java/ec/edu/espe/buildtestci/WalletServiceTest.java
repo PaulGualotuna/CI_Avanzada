@@ -32,6 +32,7 @@ public class WalletServiceTest {
         walletService = new WalletService(walletRepository, riskClient);
     }
 
+    //Crear cuenta con datos válidos, guardar y retornar respuesta
     @Test
     void createWallet_validData_shouldSaveAndReturnResponse() {
         //Arrange
@@ -54,6 +55,7 @@ public class WalletServiceTest {
         verify(walletRepository).existsByOwnerEmail(email);
     }
 
+    //Crear cuenta con correo no válido, lanzar excepción y no llamar dependencias
     @Test
     void createWallet_invalidEmail_shouldThrow_andNotCallDependencies() {
         //Arrange
@@ -68,6 +70,7 @@ public class WalletServiceTest {
 
     }
 
+    //Depositar a una cuenta que no se encuentra y lanzar excepción
     @Test
     void deposit_walletNotFound_shouldThrow() {
         // Arrange
@@ -86,6 +89,7 @@ public class WalletServiceTest {
 
     }
 
+    //Depositar a una cuenta, actualizar balance, guardar y usar captor
     @Test void deposit_shouldUpdateBalance_andSave_usingCaptor(){
         //Arrange
         Wallet wallet = new Wallet("paul@espe.edu.ec", 300.0);
