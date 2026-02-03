@@ -114,6 +114,7 @@ public class WalletServiceTest {
 
 
     //AGREGADO LUEGO DE HACER LO DEL GIT
+    //Retirar de una cuenta con fondos insuficientes, lanzar excepción y no guardar
     @Test
     void withdraw_insufficientFunds_shouldThrow_andNotSave() {
         // Arrange
@@ -129,4 +130,27 @@ public class WalletServiceTest {
         verify(walletRepository, never()).save(any(Wallet.class));
 
     }
+
+    //Retirar de una cuenta exitoso, actualizar saldo y guardar
+    @Test
+    void withdraw_validData_shouldUpdateBalance_andSave() {
+        // Arrange
+        Wallet wallet = new Wallet("paul@espe.edu.ec", 800.0);
+        String walletId = wallet.getId();
+
+        when(walletRepository.findById(walletId)).thenReturn(Optional.of(wallet));
+        when(walletRepository.save(any(Wallet.class))).thenAnswer(i -> i.getArgument(0));
+
+        ArgumentCaptor<Wallet> captor = ArgumentCaptor.forClass(Wallet.class);
+
+        // Act
+        double newBalance = walletService.withdraw(walletId, 300.0);
+
+        // Assert
+        assertEquals(500.0, newBalance);
+
+        verify(walletRepository).save(captor.capture());
+        Wallet saved = captor.getValue();
+        assertEquals(500.0, saved.getBalance());
+        }
 }
