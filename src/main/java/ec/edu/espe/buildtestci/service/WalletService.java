@@ -81,15 +81,19 @@ public class WalletService {
     //Retiro de dinero
     public double withdraw(String walletId, double amount){
         //validaciones
-        if(amount < 0){
+        //amount debe ser mayor a 0
+        if(amount <= 0){
             throw new IllegalArgumentException("Amount cannot be negative");
         }
+        //Wallet debe existir
         Wallet wallet = walletRepository.findById(walletId).orElseThrow(() -> new IllegalArgumentException("Wallet not found"));
 
+        //saldo suficiente(si no, lanzar excepción)
         if(wallet.getBalance() < amount){
             throw new IllegalStateException("Insufficient funds");
         }
 
+        //Actualizar saldo y guardar
         wallet.withdraw(amount);
         walletRepository.save(wallet);
         return wallet.getBalance();
