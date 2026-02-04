@@ -1,0 +1,40 @@
+name: CD
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Obtener el código
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Configurar Java 17 (usa la misma versión de tu proyecto)
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      # 3. Dar permisos a gradlew (necesario en Linux)
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      # 4. Ejecutar pruebas automatizadas (REQUISITO del enunciado)
+      - name: Run automated tests
+        run: ./gradlew test
+
+      # 5. Construir proyecto usando Gradle (REQUISITO del enunciado)
+      - name: Build project with Gradle
+        run: ./gradlew build
+
+      # 6. Publicar archivo .jar como artefacto (REQUISITO del enunciado)
+      - name: Upload JAR artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: application-jar
+          path: build/libs/*.jar
